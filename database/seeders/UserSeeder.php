@@ -18,14 +18,14 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'name'     => 'Admin',
             'email'    => 'admin@gmail.com',
-            'password' => Hash::make('admin'),
+            'password' => bcrypt('admin'),
             'admin'    => 1
         ]);
 
         DB::table('users')->insert([
             'name'     => 'User',
             'email'    => 'user@gmail.com',
-            'password' => Hash::make('user'),
+            'password' => bcrypt('user'),
             'admin'    => 0
         ]);
     }
