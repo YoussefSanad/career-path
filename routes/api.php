@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group([
     'middleware' => 'api',
-    'prefix' => 'auth'
+    'prefix'     => 'auth'
 
 ], function ($router) {
     Route::post('login', 'App\Http\Controllers\APIs\AuthController@login');
@@ -30,4 +30,9 @@ Route::group([
     Route::get('user-profile', 'App\Http\Controllers\APIs\AuthController@userProfile');
 });
 
-Route::resource('job_posts', \App\Http\Controllers\APIs\JobPostController::class)->middleware(['auth', 'admin']);
+Route::resource('job_posts', \App\Http\Controllers\APIs\JobPostController::class)
+    ->middleware(['auth']);
+Route::resource('applications', \App\Http\Controllers\APIs\ApplicationController::class)
+    ->middleware(['auth', 'admin']);
+Route::get('applications/{applicationId}/download_cv', 'App\Http\Controllers\APIs\ApplicationController@downloadCV')
+    ->middleware(['auth', 'admin']);

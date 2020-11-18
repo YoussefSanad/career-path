@@ -23,7 +23,7 @@ class Authenticate extends Middleware
             auth()->userOrFail();
         } catch (\Exception $e)
         {
-            return response()->json(['error' => $e->getMessage()]);
+            return response()->json(['error' => "Authentication Required"]);
         }
         return $next($request);
     }
