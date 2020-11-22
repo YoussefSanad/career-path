@@ -28,7 +28,7 @@ class JobPostController extends Controller
      */
     public function index()
     {
-        return self::respond(JobPost::all());
+        return self::respond(JobPost::all()->toArray());
     }
 
     /**

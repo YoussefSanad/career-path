@@ -40,10 +40,9 @@ class ApplicationController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = self::validateInput($request);
-        if ($validator->fails()) self::respond($validator->errors(), false, 'Validation Faild');
         try
         {
+            self::validateInput($request);
             return self::respond(self::createApplication($request));
         } catch (\Exception $e)
         {
@@ -102,7 +101,7 @@ class ApplicationController extends Controller
      */
     private static function validateInput(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'job_post_id'     => 'required|integer',
             'first_name'      => 'required|string',
             'last_name'       => 'required|string',
@@ -110,9 +109,8 @@ class ApplicationController extends Controller
             'date_of_birth'   => 'required|date',
             'email'           => 'required|email',
             'cv'              => 'required|mimes:doc,docx,pdf,txt|max:2048',
-            'notes'           => 'required|date',
+            'notes'           => 'required|string',
         ]);
-        return $validator;
     }
 
     /**

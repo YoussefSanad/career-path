@@ -38,7 +38,7 @@ class AuthController extends Controller
 
         if ($validator->fails())
         {
-            return response()->json($validator->errors(), 422);
+            return response()->json(['error' => 'Invalid entries'], 401);
         }
 
         if (!$token = auth()->attempt($validator->validated()))

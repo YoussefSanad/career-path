@@ -27,7 +27,7 @@ Route::group([
     Route::post('register', 'App\Http\Controllers\APIs\AuthController@register');
     Route::post('logout', 'App\Http\Controllers\APIs\AuthController@logout');
     Route::post('refresh', 'App\Http\Controllers\APIs\AuthController@refresh');
-    Route::get('user-profile', 'App\Http\Controllers\APIs\AuthController@userProfile');
+    Route::get('user_profile', 'App\Http\Controllers\APIs\AuthController@userProfile');
 });
 
 Route::resource('job_posts', \App\Http\Controllers\APIs\JobPostController::class)
