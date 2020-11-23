@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JobPost;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class JobPostController extends Controller
@@ -28,7 +29,9 @@ class JobPostController extends Controller
      */
     public function index()
     {
-        return self::respond(JobPost::all()->toArray());
+        return self::respond(JobPost::where('start_date', '<', Carbon::now())
+            ->where('end_date', '>', Carbon::now())
+            ->get()->toArray());
     }
 
     /**
@@ -85,11 +88,27 @@ class JobPostController extends Controller
      */
     public function destroy($jobPostId)
     {
-        $jobPost = JobPost::find($jobPostId);
-        if(!$jobPost) return self::respond(null, false, 'Job post not found');
-        $jobPost->applications()->delete();
-        $jobPost->delete();
-        return self::respond('Jop post deleted successfully.');
+        try{
+            $jobPost = JobPost::find($jobPostId);
+            self::deleteJobPostApplicationsFiles($jobPost);
+            $jobPost->applications()->delete();
+            $jobPost->delete();
+            return self::respond('Jop post deleted successfully.');
+        }catch(\Exception $e){
+            return self::respond(null, false, $e);
+        }
+    }
+
+    /**
+     * deletes all the files related to the job's applications
+     * @param JobPost $jobPost
+     */
+    static private function deleteJobPostApplicationsFiles(JobPost $jobPost)
+    {
+        foreach ($jobPost->applications as $application)
+        {
+            Storage::delete($application->attachment_path);
+        }
     }
 
 
@@ -145,16 +164,16 @@ class JobPostController extends Controller
      */
     private static function updateJobPost($jobPostId, Request $request)
     {
-            $jobPost = JobPost::find($jobPostId);
-            if (!$jobPost) throw new \Exception('Job post not found');
-            $jobPost->update([
-                'user_id'                   => auth()->user()->id,
-                'title'                     => $request->title,
-                'required_experience_level' => $request->required_experience_level,
-                'job_requirements'          => $request->job_requirements,
-                'start_date'                => Carbon::parse($request->start_date),
-                'end_date'                  => Carbon::parse($request->end_date),
-            ]);
-            return JobPost::find($jobPostId);
+        $jobPost = JobPost::find($jobPostId);
+        if (!$jobPost) throw new \Exception('Job post not found');
+        $jobPost->update([
+            'user_id'                   => auth()->user()->id,
+            'title'                     => $request->title,
+            'required_experience_level' => $request->required_experience_level,
+            'job_requirements'          => $request->job_requirements,
+            'start_date'                => Carbon::parse($request->start_date),
+            'end_date'                  => Carbon::parse($request->end_date),
+        ]);
+        return JobPost::find($jobPostId);
     }
 }

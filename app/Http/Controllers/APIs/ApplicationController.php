@@ -76,6 +76,7 @@ class ApplicationController extends Controller
             $application = Application::find($applicationId);
             if (!$application) throw new \Exception('Application not found');
             return Storage::download($application->attachment_path);
+//            return response()->download(public_path('storage/' . $application->attachment_path));
         } catch (\Exception $e)
         {
             return self::respond(null, false, $e->getMessage());
