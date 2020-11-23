@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Validator;
 class ApplicationController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware(['admin'], ['except' => ['store']]);
+    }
+
     /**
      * List all applications.
      *

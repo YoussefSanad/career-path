@@ -33,6 +33,6 @@ Route::group([
 Route::resource('job_posts', \App\Http\Controllers\APIs\JobPostController::class)
     ->middleware(['auth']);
 Route::resource('applications', \App\Http\Controllers\APIs\ApplicationController::class)
-    ->middleware(['auth', 'admin']);
+    ->middleware(['auth']);
 Route::get('applications/{applicationId}/download_cv', 'App\Http\Controllers\APIs\ApplicationController@downloadCV')
     ->middleware(['auth', 'admin']);

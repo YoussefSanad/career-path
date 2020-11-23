@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JobPost;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -52,10 +53,9 @@ class JobPostController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = self::validateInput($request);
-        if ($validator->fails()) self::respond($validator->errors(), false, 'Validation Faild');
         try
         {
+            self::validateInput($request);
             return self::respond(self::createJobPost($request));
         } catch (\Exception $e)
         {
@@ -71,10 +71,10 @@ class JobPostController extends Controller
      */
     public function update($jobPostId, Request $request)
     {
-        $validator = self::validateInput($request);
-        if ($validator->fails()) self::respond($validator->errors(), false, 'Validation Faild');
         try
         {
+            Log::info($request->title);
+            self::validateInput($request);
             return self::respond(self::updateJobPost($jobPostId, $request));
         } catch (\Exception $e)
         {
@@ -88,13 +88,15 @@ class JobPostController extends Controller
      */
     public function destroy($jobPostId)
     {
-        try{
+        try
+        {
             $jobPost = JobPost::find($jobPostId);
             self::deleteJobPostApplicationsFiles($jobPost);
             $jobPost->applications()->delete();
             $jobPost->delete();
             return self::respond('Jop post deleted successfully.');
-        }catch(\Exception $e){
+        } catch (\Exception $e)
+        {
             return self::respond(null, false, $e);
         }
     }
@@ -126,18 +128,16 @@ class JobPostController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Contracts\Validation\Validator
      */
     private static function validateInput(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'title'                     => 'required|string',
             'required_experience_level' => 'required|string',
             'job_requirements'          => 'required|string',
             'start_date'                => 'required|date',
             'end_date'                  => 'required|date',
         ]);
-        return $validator;
     }
 
     /**
